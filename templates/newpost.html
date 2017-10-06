@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+    <h1  align="center">Build A Blog</h1>
+
+    <hr />
+    <form action="/blog" method="post">
+        <table>
+            <tr>
+                <td><label for="title">Blog Title</label></td>
+                <td>
+                    <input name="title" type="string">
+                </td>
+            </tr>
+            <tr>
+                <td><label for="body">Blog Entry</label></td>
+                <td>
+                    <textarea rows="5" cols="80" id="body"></textarea>
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="Sumbit">
+    </form>
+          
+            
+{% endblock %}
