@@ -29,7 +29,7 @@ def index():
 def newpost():
     if request.method == 'POST':
         title_name = request.form ['title']
-        body_text = request.form['body']
+        body_text = request.form ['body']
         new_blog = Blog(title_name, body_text)
         db.session.add(new_blog)
         db.session.commit()
