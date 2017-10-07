@@ -30,6 +30,7 @@ def is_empty (n):
 #displays main page with all blog entries
 @app.route('/blog', methods = ['POST', 'GET'])
 def index(): 
+    blogs = Blog.query.all()
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
 #displays form for new blog entry
@@ -67,7 +68,10 @@ def newpost():
         
     #take user back to main page with new blog entry
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
-    
+
+@app.route ('/single_view')
+def single_entry():
+    return render_template('single_view.html')   
 
 
 if __name__== '__main__':

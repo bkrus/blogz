@@ -7,18 +7,16 @@
     {% if blogs|length == 0 %}
     <p>No blogs yet</p>
     {% else %}
-        <ul>
             {% for blog in blogs %}
 
             <div>
-                <h2>{{blog.title}}</h2>
+                <h2><a href = '/single_view/blog.id'>{{blog.title}}</a></h2>
                 <p>{{blog.body}}</p>
                 <hr />
 
             </div>
 
             {% endfor %}
-        </ul>
     
     {% endif %}
            
