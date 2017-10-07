@@ -8,7 +8,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = 'randomkey'
 
-class Blog (db.Model): #Creates a persistent class to save data to DB. extends(db.Model)= SQL Alchemy plugin 
+#Creates a persistent class to save data to DB. extends(db.Model)= SQL Alchemy plugin 
+class Blog (db.Model): 
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
@@ -18,25 +19,55 @@ class Blog (db.Model): #Creates a persistent class to save data to DB. extends(d
         self.title = title
         self.body = body
 
-@app.route('/blog', methods = ['POST', 'GET'])
-def index():
+#variable to query: select * from Blog, used downstream
+blogs = Blog.query.all()
 
-    blogs = Blog.query.all()
-    #completed_tasks = Task.query.filter_by(completed=True, owner=owner).all()
+#use to check if a string is empty
+def is_empty (n): 
+        if n == "":
+            return True
+
+#displays main page with all blog entries
+@app.route('/blog', methods = ['POST', 'GET'])
+def index(): 
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
-@app.route('/newpost', methods = ['POST', 'GET'])
+#displays form for new blog entry
+@app.route ('/newpost')
+def display_newpost():
+    return render_template('newpost.html')
+
+#blog entry data churn
+@app.route('/newpost', methods = ['POST'])
 def newpost():
-    if request.method == 'POST':
-        title_name = request.form ['title']
-        body_text = request.form ['body']
+    title_name = request.form ['title']
+    title_error = ''
+    
+    body_text = request.form ['body']
+    body_error = ''
+    
+    #validate input fields are not empty
+    if is_empty(title_name): 
+        title_error = 'Title cannot be empty'
+
+    if is_empty(body_text): 
+        body_error = 'Body cannot be empty'
+        
+        #render page with error messages
+        return render_template('newpost.html', 
+                            title = "New Entry", 
+                            body_error=body_error, 
+                            title_error=title_error)
+        
+    #if no errors, save to the DB
+    else:
         new_blog = Blog(title_name, body_text)
         db.session.add(new_blog)
         db.session.commit()
+        
+    #take user back to main page with new blog entry
+    return render_template('blog.html', title="Blog Entry", blogs=blogs)
     
-    return render_template('newpost.html')
-
-
 
 
 if __name__== '__main__':

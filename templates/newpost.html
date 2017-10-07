@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 {% extends "base.html" %}
+<style>
+    .error {
+        color: red;
+    }
+</style>
 
 {% block content %}
     <h1  align="center">Build A Blog</h1>
 
     <hr />
-    <form action="/blog" method="post">
+    <form action="/newpost" method="post">
         <table>
             <tr>
                 <td><label for="title">Blog Title</label></td>
                 <td>
-                    <input type="text" name='title' />
+                    <input name='title' type="text" />
+                    <span class="error">{{title_error}}</span>
                 </td>
             </tr>
             <tr>
                 <td><label for="body">Blog Entry</label></td>
                 <td>
-                    <input type="text" name='body' />
+                    <textarea name='body' rows="4" cols="50"></textarea>
+                    <span class="error">{{body_error}}</span>
                 </td>
             </tr>
         </table>
