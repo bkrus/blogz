@@ -10,7 +10,7 @@
             {% for blog in blogs %}
 
             <div>
-                <h2><a href = '/single_view/blog.id'>{{blog.title}}</a></h2>
+                <h2><a href = '/blog?id={{blog.id}}'>{{blog.title}}</a></h2>
                 <p>{{blog.body}}</p>
                 <hr />
 
