@@ -30,12 +30,17 @@ def is_empty (n):
 #displays main page with all blog entries
 @app.route('/blog', methods = ['POST', 'GET'])
 def index(): 
+    #captures the blog.id when blog hyperlink is clicked 
     blog_id = request.args.get('id')
+    
+    #queries for a single blog entry based on blog_id
     single = Blog.query.filter_by(id = blog_id).first()
     
+    #sends user to single view if request.args is present
     if request.args: 
         return render_template('single_view.html', title=single.title, body=single.body)   
     
+    #else, takes user to main page
     blogs = Blog.query.all()
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
@@ -72,13 +77,8 @@ def newpost():
         db.session.add(new_blog)
         db.session.commit()
         
-    #take user back to main page with new blog entry
+    #take user to single blog view after blog entry
     return redirect('/blog?id='+str(new_blog.id))
-
-@app.route ('/single_view')
-def single_entry():
-    return render_template('single_view.html')   
-
 
 if __name__== '__main__':
     app.run()
