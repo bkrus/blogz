@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:build-a-blog@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:blogz@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = 'randomkey'
@@ -14,13 +14,25 @@ class Blog (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(500))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
 
     def __init__(self, title, body):
         self.title = title
         self.body = body
+        self.owner = owner
 
-#variable to query: select * from Blog, used downstream
-blogs = Blog.query.all()
+class User (db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(120))
+    password = db.Column(db.String(50))
+    blog_id = db.relationship('id', backref = 'owner') 
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
 
 #use to check if a string is empty
 def is_empty (n): 
@@ -44,14 +56,22 @@ def index():
     blogs = Blog.query.all()
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
+@app.route ('/login')
+def login():
+    return render_template('login.html')
+
+@app.route ('/signup')
+def signup():
+    return render_template('signup.html')
+
 #displays form for new blog entry
 @app.route ('/newpost')
 def display_newpost():
     return render_template('newpost.html')
 
 #blog entry data churn
-@app.route('/newpost', methods = ['POST'])
-def newpost():
+@app.route('/newpost', methods = ['POST'])    #Think about what needs to change here now that we have user sign in. 
+def newpost():                                #Will need to incorperate owner_id
     title_name = request.form ['title']
     title_error = ''
     
