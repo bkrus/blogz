@@ -25,9 +25,9 @@ class Blog (db.Model):
 class User (db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(120))
+    username = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(50))
-    blog_id = db.relationship('id', backref = 'owner') 
+    #blog_id = db.relationship('id', backref = 'owner') 
 
     def __init__(self, username, password):
         self.username = username
@@ -38,6 +38,42 @@ class User (db.Model):
 def is_empty (n): 
         if n == "":
             return True
+
+@app.route ('/login', methods=['POST','GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.password == password:
+            #TODO remember user has logged in
+            return redirect('/blog')
+        else:
+            #TODO explain why login failed
+            return '<h1>Error</h1>'
+    return render_template('login.html')
+
+@app.route ('/signup', methods=['POST','GET'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        #TODO - add in validations
+
+        existing_user = User.query.filter_by(username=username).first()
+        if not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            # TODO remember user logged in
+            return redirect ('/blog')
+        else:
+            #TODO - user exists message
+            return '<h1>dupe user</h1>'        
+
+    return render_template('signup.html')
 
 #displays main page with all blog entries
 @app.route('/blog', methods = ['POST', 'GET'])
@@ -56,13 +92,7 @@ def index():
     blogs = Blog.query.all()
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
-@app.route ('/login')
-def login():
-    return render_template('login.html')
 
-@app.route ('/signup')
-def signup():
-    return render_template('signup.html')
 
 #displays form for new blog entry
 @app.route ('/newpost')
