@@ -98,8 +98,20 @@ def logout():
     return redirect ('/blog')
 
 
+@app.route('/')
+def home():
+    user_id = request.args.get('id')
+    user_page = User.query.filter_by(id=user_id).all()
+    users = User.query.all()
+    if request.args:
+        return render_tempate ('userpage.html')
+    return render_template('index.html', title="Home", users=users)
+
+    
+
 @app.route('/blog', methods = ['POST', 'GET']) #displays main page with all blog entries
 def index(): 
+    
     
     blog_id = request.args.get('id') #captures the blog.id when blog hyperlink is clicked 
     single = Blog.query.filter_by(id = blog_id).first() #queries for a single blog entry based on blog_id
@@ -124,7 +136,6 @@ def newpost():
     owner = User.query.filter_by(username=session['username']).first()
     
     
-    #TODO add FLASH validate input fields are not empty
     if is_empty(title_name): 
         title_error = 'Title cannot be empty'
 

@@ -9,18 +9,20 @@
 {% block content %}
 <h1  align="center">Blog Users</h1>
 
-{% if blogs|length == 0 %}
+{% if users|length == 0 %}
 <p>No bloggers yet</p>
 {% else %}
-        {% for blog in blogs %}
-
+        {% for user in users %}
+    <div align="center">
         <ul>
-            <li>blogger place holder</li>
+            <li><a href = '/user?id={{user.id}}'>{{user.username}}</a></li>
         </ul>
-
+    </div>
         {% endfor %}
 
 {% endif %}
        
         
 {% endblock %}
+
+<h2><a href = '/blog?id={{blog.id}}'>{{blog.title}}</a></h2>
