@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+<style>
+    .error {
+        color: red;
+    }
+</style>
+
+{% block content %}
+<h1  align="center">Blog Users</h1>
+
+{% if blogs|length == 0 %}
+<p>No bloggers yet</p>
+{% else %}
+        {% for blog in blogs %}
+
+        <ul>
+            <li>blogger place holder</li>
+        </ul>
+
+        {% endfor %}
+
+{% endif %}
+       
+        
+{% endblock %}

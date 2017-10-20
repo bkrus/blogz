@@ -8,14 +8,12 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = 'randomkey'
 
-#Creates a persistent class to save data to DB. extends(db.Model)= SQL Alchemy plugin 
-class Blog (db.Model): 
+class Blog (db.Model): #Creates a persistent class to save data to DB. extends(db.Model)= SQL Alchemy plugin 
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(500))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
 
     def __init__(self, title, body, owner):
         self.title = title
@@ -33,9 +31,7 @@ class User (db.Model):
         self.username = username
         self.password = password
 
-
-#use to check if a string is empty
-def is_empty (n): 
+def is_empty (n): #use to check if a string is empty
         if n == "":
             return True
 
@@ -68,12 +64,28 @@ def signup():
         verify = request.form['verify']
 
         existing_user = User.query.filter_by(username=username).first()
+        if is_empty(username):
+            flash ('Username cannot be empty', 'error')
+            return redirect('/signup')
+        if len(username) < 3:
+            flash ('Username must be greater then 3 characters', 'error')
+            return redirect('/signup')
+        if is_empty(password):
+            flash ('Password cannot be empty', 'error')
+            return redirect('/signup')
+        if len(password) < 3:
+            flash ('Password must be greater then 3 characters', 'error')
+            return redirect('/signup')
+        if password != verify:
+            flash ('Password and Verify do not match', 'error')
+            return redirect('/signup')
         if not existing_user:
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
-            return redirect ('/blog')
+            flash('Congratulations, you are now registered', 'info')
+            return redirect ('/newpost')
         else:
             flash ('Username is taken', 'error')
             return redirect('/signup')        
@@ -85,35 +97,28 @@ def logout():
     del session['username']
     return redirect ('/blog')
 
-#displays main page with all blog entries
-@app.route('/blog', methods = ['POST', 'GET'])
+
+@app.route('/blog', methods = ['POST', 'GET']) #displays main page with all blog entries
 def index(): 
-    #captures the blog.id when blog hyperlink is clicked 
-    blog_id = request.args.get('id')
     
-    #queries for a single blog entry based on blog_id
-    single = Blog.query.filter_by(id = blog_id).first()
+    blog_id = request.args.get('id') #captures the blog.id when blog hyperlink is clicked 
+    single = Blog.query.filter_by(id = blog_id).first() #queries for a single blog entry based on blog_id
+    owner = User.query.filter_by(username=session['username']).first() #queries for logged in user. 
     
-    #queries for logged in user. 
-    owner = User.query.filter_by(username=session['username']).first()
-    
-    #sends user to single view if request.args is present
-    if request.args: 
+    if request.args:   #sends user to single view if request.args is present
         return render_template('single_view.html', title=single.title, body=single.body)   
     
-    #else, takes user to main page
-    blogs = Blog.query.filter_by(owner=owner).all()
+    #else, takes user to main page 
+    blogs = Blog.query.all() #returns all entires by all users
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
-
-#displays form for new blog entry
-@app.route ('/newpost')
+@app.route ('/newpost') #displays form for new blog entry
 def display_newpost():
     return render_template('newpost.html')
 
 #blog entry data churn
-@app.route('/newpost', methods = ['POST'])    #Think about what needs to change here now that we have user sign in. 
-def newpost():                                #Will need to incorperate owner_id
+@app.route('/newpost', methods = ['POST'])
+def newpost():                                
     title_name = request.form ['title']
     body_text = request.form ['body']
     owner = User.query.filter_by(username=session['username']).first()
