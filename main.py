@@ -100,37 +100,30 @@ def logout():
 
 @app.route('/', methods = ['POST', 'GET'])
 def home():
-    user_id = request.args.get('id') #captures user ID
-    user_page = Blog.query.filter_by(owner_id = user_id).all()
+
     users = User.query.all()
-    
-    if request.args:
-        return render_template ('userpage.html', title = user_page.title, body=user_page.body)
     return render_template('index.html', title="Home", users=users)
     
 
 @app.route('/blog', methods = ['POST', 'GET']) #displays main page with all blog entries
 def index(): 
     
-    user_id = request.args.get('id') #captures user ID
-    user_page = Blog.query.filter_by(owner_id = user_id).all()
-    users = User.query.all()
-    
+    user_id = request.args.get('user') #captures user ID
     blog_id = request.args.get('id') #captures the blog.id when blog hyperlink is clicked 
+    
+    users = User.query.all()
+    userblogs = Blog.query.filter_by(owner_id = user_id).all()
     single = Blog.query.filter_by(id = blog_id).first() #queries for a single blog entry based on blog_id
-    owner = User.query.filter_by(username=session['username']).first() #queries for logged in user. 
+   
     
-    if user_id:
-        return render_template ('userpage.html', title = user_page.title, body=user_page.body)
+    if request.args.get('user'):
+        return render_template ('userpage.html', userblogs=userblogs)
     
-    if blog_id:   #sends user to single view if request.args is present
+    if request.args.get('id'):   #sends user to single view if request.args is present
         return render_template('single_view.html', title=single.title, body=single.body)   
     
-    #else, takes user to main page 
-    blogs = Blog.query.join(User).all() #returns all entires by all users
-    
-    #user = User.query.join(Blog).filter_by(owner_id= User.id).all()
-    return render_template('blog.html', title="Blog Entry", blogs=blogs)
+    blogs = Blog.query.all()
+    return render_template('blog.html', title="Blog Entry", blogs=blogs, users=users, userblogs=userblogs)
 
 @app.route ('/newpost') #displays form for new blog entry
 def display_newpost():
