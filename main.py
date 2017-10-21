@@ -98,30 +98,37 @@ def logout():
     return redirect ('/blog')
 
 
-@app.route('/')
+@app.route('/', methods = ['POST', 'GET'])
 def home():
-    user_id = request.args.get('id')
-    user_page = Blog.query.filter_by(id=user_id).all()
+    user_id = request.args.get('id') #captures user ID
+    user_page = Blog.query.filter_by(owner_id = user_id).all()
     users = User.query.all()
     
     if request.args:
-        return render_tempate ('userpage.html', user_page = blog, user_id=user)
+        return render_template ('userpage.html', title = user_page.title, body=user_page.body)
     return render_template('index.html', title="Home", users=users)
     
 
 @app.route('/blog', methods = ['POST', 'GET']) #displays main page with all blog entries
 def index(): 
     
+    user_id = request.args.get('id') #captures user ID
+    user_page = Blog.query.filter_by(owner_id = user_id).all()
+    users = User.query.all()
     
     blog_id = request.args.get('id') #captures the blog.id when blog hyperlink is clicked 
     single = Blog.query.filter_by(id = blog_id).first() #queries for a single blog entry based on blog_id
     owner = User.query.filter_by(username=session['username']).first() #queries for logged in user. 
     
-    if request.args:   #sends user to single view if request.args is present
+    if user_id:
+        return render_template ('userpage.html', title = user_page.title, body=user_page.body)
+    
+    if blog_id:   #sends user to single view if request.args is present
         return render_template('single_view.html', title=single.title, body=single.body)   
     
     #else, takes user to main page 
     blogs = Blog.query.join(User).all() #returns all entires by all users
+    
     #user = User.query.join(Blog).filter_by(owner_id= User.id).all()
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 

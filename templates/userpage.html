@@ -10,8 +10,8 @@
             {% for blog in blogs %}
 
             <div>
-                <h2><a href = '/user?id={{user.id}}'>{{blog.title}}</a></h2>
-                <p>{{blog.body}}</p>
+                <h2><a href = '/blog?user=userId{{user.id}}'>{{title}}</a></h2>
+                <p>{{body}}</p>
                 <h6>written by {{user.username}}</h6>
                 <hr />
 
@@ -23,3 +23,5 @@
            
             
 {% endblock %}
+
+http://localhost:5000/blog?user=userId?1
