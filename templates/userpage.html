@@ -10,9 +10,9 @@
             {% for blog in blogs %}
 
             <div>
-                <h2><a href = '/blog?id={{blog.id}}'>{{blog.title}}</a></h2>
+                <h2><a href = '/user?id={{user.id}}'>{{blog.title}}</a></h2>
                 <p>{{blog.body}}</p>
-                <h6>written by placeholder</h6>
+                <h6>written by {{user.username}}</h6>
                 <hr />
 
             </div>

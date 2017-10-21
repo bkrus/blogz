@@ -101,12 +101,12 @@ def logout():
 @app.route('/')
 def home():
     user_id = request.args.get('id')
-    user_page = User.query.filter_by(id=user_id).all()
+    user_page = Blog.query.filter_by(id=user_id).all()
     users = User.query.all()
+    
     if request.args:
-        return render_tempate ('userpage.html')
+        return render_tempate ('userpage.html', user_page = blog, user_id=user)
     return render_template('index.html', title="Home", users=users)
-
     
 
 @app.route('/blog', methods = ['POST', 'GET']) #displays main page with all blog entries
@@ -121,14 +121,15 @@ def index():
         return render_template('single_view.html', title=single.title, body=single.body)   
     
     #else, takes user to main page 
-    blogs = Blog.query.all() #returns all entires by all users
+    blogs = Blog.query.join(User).all() #returns all entires by all users
+    #user = User.query.join(Blog).filter_by(owner_id= User.id).all()
     return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
 @app.route ('/newpost') #displays form for new blog entry
 def display_newpost():
     return render_template('newpost.html')
 
-#blog entry data churn
+#blog entry data churns
 @app.route('/newpost', methods = ['POST'])
 def newpost():                                
     title_name = request.form ['title']
