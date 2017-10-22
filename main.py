@@ -35,9 +35,9 @@ def is_empty (n): #use to check if a string is empty
         if n == "":
             return True
 
-@app.before_request
+@app.before_request #requires user to login to procede 
 def require_login():
-    allowed_routes = ['login', 'signup']
+    allowed_routes = ['login', 'signup'] #whitelist of links where login is not needed
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('/login')
 
@@ -115,10 +115,10 @@ def index():
     single = Blog.query.filter_by(id = blog_id).first() #queries for a single blog entry based on blog_id
    
     
-    if request.args.get('user'):
+    if request.args.get('user'): #loads blogs by user when user link is clicked
         return render_template ('userpage.html', userblogs=userblogs)
     
-    if request.args.get('id'):   #sends user to single view if request.args is present
+    if request.args.get('id'):   #loads a single blog when blog link is clicked
         return render_template('single_view.html', title=single.title, body=single.body)   
     
     blogs = Blog.query.all()
@@ -134,7 +134,6 @@ def newpost():
     title_name = request.form ['title']
     body_text = request.form ['body']
     owner = User.query.filter_by(username=session['username']).first()
-    
     
     if is_empty(title_name): 
         title_error = 'Title cannot be empty'
