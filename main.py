@@ -111,7 +111,6 @@ def index():
     user_id = request.args.get('user') #captures user ID
     blog_id = request.args.get('id') #captures the blog.id when blog hyperlink is clicked 
     
-    users = User.query.all()
     userblogs = Blog.query.filter_by(owner_id = user_id).all()
     single = Blog.query.filter_by(id = blog_id).first() #queries for a single blog entry based on blog_id
    
@@ -123,7 +122,7 @@ def index():
         return render_template('single_view.html', title=single.title, body=single.body)   
     
     blogs = Blog.query.all()
-    return render_template('blog.html', title="Blog Entry", blogs=blogs, users=users, userblogs=userblogs)
+    return render_template('blog.html', title="Blog Entry", blogs=blogs)
 
 @app.route ('/newpost') #displays form for new blog entry
 def display_newpost():
